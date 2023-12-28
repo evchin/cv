@@ -15,6 +15,24 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
+  const summaryParts = RESUME_DATA.summary.split("click here and hit send");
+  const smsLink = `sms:+16266073880?body=${encodeURIComponent(
+    "my name is ____. saw your resume, would love to chat.",
+  )}`;
+
+  function linkify(text: string, links: Record<string, string>) {
+    let linkedText = text;
+    for (const word in links) {
+      const link = links[word];
+      const regex = new RegExp(`\\b${word}\\b`, "gi");
+      linkedText = linkedText.replace(
+        regex,
+        `<a href="${link}" target="_blank" style="text-decoration:underline;">${word}</a>`,
+      );
+    }
+    return linkedText;
+  }
+
   return (
     <main className="container relative mx-auto scroll-my-12 overflow-auto p-4 print:p-12 md:p-16">
       <section className="mx-auto w-full max-w-2xl space-y-8 bg-white print:space-y-6">
@@ -67,7 +85,7 @@ export default function Page() {
                   size="icon"
                   asChild
                 >
-                  <a href={social.url}>
+                  <a href={social.url} target="_blank">
                     <social.icon className="h-4 w-4" />
                   </a>
                 </Button>
@@ -87,7 +105,7 @@ export default function Page() {
             </div>
           </div>
 
-          <Avatar className="h-28 w-28">
+          <Avatar className="h-40 w-40">
             <AvatarImage alt={RESUME_DATA.name} src={RESUME_DATA.avatarUrl} />
             <AvatarFallback>{RESUME_DATA.initials}</AvatarFallback>
           </Avatar>
@@ -95,12 +113,24 @@ export default function Page() {
         <Section>
           <h2 className="text-xl font-bold">About</h2>
           <p className="text-pretty font-mono text-sm text-muted-foreground">
-            {RESUME_DATA.summary}
+            {summaryParts[0]}
+            <a href={smsLink} className="underline">
+              click here and hit send
+            </a>
+            .
           </p>
         </Section>
         <Section>
           <h2 className="text-xl font-bold">Work Experience</h2>
           {RESUME_DATA.work.map((work) => {
+            const linkedDescription = linkify(work.description, {
+              Disney:
+                "https://venturebeat.com/games/emerge-partners-with-disney-to-bring-multi-sensory-communication-to-homes/",
+              Sony: "https://techcrunch.com/2023/10/05/sony-will-offer-emerges-tactile-ultrasound-device-through-a-smart-tv-bundle/",
+              "published by WEF":
+                "https://www.weforum.org/agenda/2020/11/touching-less-heres-why-that-matters/",
+            });
+
             return (
               <Card key={work.company}>
                 <CardHeader>
@@ -123,7 +153,7 @@ export default function Page() {
                       </span>
                     </h3>
                     <div className="text-sm tabular-nums text-gray-500">
-                      {work.start} - {work.end}
+                      {work.start ? `${work.start} - ${work.end}` : work.end}
                     </div>
                   </div>
 
@@ -131,9 +161,10 @@ export default function Page() {
                     {work.title}
                   </h4>
                 </CardHeader>
-                <CardContent className="mt-2 text-xs">
-                  {work.description}
-                </CardContent>
+                <CardContent
+                  className="mt-2 text-xs"
+                  dangerouslySetInnerHTML={{ __html: linkedDescription }}
+                />
               </Card>
             );
           })}
