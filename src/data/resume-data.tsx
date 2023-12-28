@@ -68,7 +68,7 @@ export const RESUME_DATA = {
       start: "2023",
       end: "2023",
       description:
-        "Led the design of the onboarding process for a groundbreaking product with 3 separate hardware components, transforming a complex setup into an intuitive user experience. Worked across engineering, design, and customer support to align product functionality with user expectation.",
+        "Led the design of the onboarding process for a groundbreaking hardware product with 3 separate hardware components. Worked across engineering, design, and customer support to align product functionality with user expectation.",
     },
     {
       company: "",

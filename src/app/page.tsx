@@ -20,19 +20,6 @@ export default function Page() {
     "my name is ____. saw your resume, would love to chat.",
   )}`;
 
-  function linkify(text: string, links: Record<string, string>) {
-    let linkedText = text;
-    for (const word in links) {
-      const link = links[word];
-      const regex = new RegExp(`\\b${word}\\b`, "gi");
-      linkedText = linkedText.replace(
-        regex,
-        `<a href="${link}" target="_blank" style="text-decoration:underline;">${word}</a>`,
-      );
-    }
-    return linkedText;
-  }
-
   return (
     <main className="container relative mx-auto scroll-my-12 overflow-auto p-4 print:p-12 md:p-16">
       <section className="mx-auto w-full max-w-2xl space-y-8 bg-white print:space-y-6">
@@ -123,16 +110,43 @@ export default function Page() {
         <Section>
           <h2 className="text-xl font-bold">Work Experience</h2>
           {RESUME_DATA.work.map((work) => {
-            const linkedDescription = linkify(work.description, {
-              Disney:
-                "https://venturebeat.com/games/emerge-partners-with-disney-to-bring-multi-sensory-communication-to-homes/",
-              Sony: "https://techcrunch.com/2023/10/05/sony-will-offer-emerges-tactile-ultrasound-device-through-a-smart-tv-bundle/",
-              "published by WEF":
-                "https://www.weforum.org/agenda/2020/11/touching-less-heres-why-that-matters/",
-            });
+            function linkify(text: string, links: Record<string, string>) {
+              let linkedText = text;
+              for (const word in links) {
+                const link = links[word];
+                const regex = new RegExp(`\\b${word}\\b`, "gi");
+                linkedText = linkedText.replace(
+                  regex,
+                  `<a href="${link}" target="_blank" style="text-decoration:underline;">${word}</a>`,
+                );
+              }
+              return linkedText;
+            }
+
+            const sentences = work.description
+              .split(".")
+              .filter((sentence) => sentence.trim() !== "");
+
+            const linkedSentences = sentences.map(
+              (sentence) =>
+                linkify(sentence, {
+                  Disney:
+                    "https://venturebeat.com/games/emerge-partners-with-disney-to-bring-multi-sensory-communication-to-homes/",
+                  Sony: "https://techcrunch.com/2023/10/05/sony-will-offer-emerges-tactile-ultrasound-device-through-a-smart-tv-bundle/",
+                  "published by WEF":
+                    "https://www.weforum.org/agenda/2020/11/touching-less-heres-why-that-matters/",
+                }) + ".",
+            );
 
             return (
-              <Card key={work.company}>
+              <Card
+                key={work.company}
+                className={
+                  work.company
+                    ? "mt-4"
+                    : "-mt-2"
+                }
+              >
                 <CardHeader>
                   <div className="flex items-center justify-between gap-x-2 text-base">
                     <h3 className="inline-flex items-center justify-center gap-x-1 font-semibold leading-none">
@@ -161,10 +175,18 @@ export default function Page() {
                     {work.title}
                   </h4>
                 </CardHeader>
-                <CardContent
-                  className="mt-2 text-xs"
-                  dangerouslySetInnerHTML={{ __html: linkedDescription }}
-                />
+                <CardContent className="mt-2 text-xs">
+                  <ul className="bullet-list">
+                    {linkedSentences.map((sentence, index) => (
+                      <li
+                        key={index}
+                        dangerouslySetInnerHTML={{
+                          __html: sentence.trim(),
+                        }}
+                      />
+                    ))}
+                  </ul>
+                </CardContent>
               </Card>
             );
           })}

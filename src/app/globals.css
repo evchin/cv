@@ -78,3 +78,8 @@
 .print-force-new-page {
   page-break-before: always;
 }
+
+.bullet-list {
+  list-style-type: disc;
+  padding-left: 20px;
+}
